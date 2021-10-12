@@ -27,15 +27,23 @@ class Field {
         
         resultArray[0][0] = pathCharacter
 
-        const ranX = Math.floor(Math.random() * col);
-        const ranY = Math.floor(Math.random() * row);
+        const hatX = Math.floor(Math.random() * col);
+        const hatY = Math.floor(Math.random() * row);
 
-        resultArray[ranY][ranX] = hat
+        resultArray[hatY][hatX] = hat
 
         for (let h=0; h<hole; h++) {
             const ranX = Math.floor(Math.random() * col);
             const ranY = Math.floor(Math.random() * row);
-            resultArray[ranY][ranX] = 'O'
+            if(ranX !== 0 && ranY !== 0) {
+                resultArray[ranY][ranX] = 'O'
+            
+            } 
+            if(ranX !== hatX && ranY !== hatY) {
+                resultArray[ranY][ranX] = 'O'
+            }
+
+            
         }
 
         return resultArray;
