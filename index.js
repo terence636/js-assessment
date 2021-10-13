@@ -14,8 +14,9 @@ class Field {
         this.positionY = 0;
     }
 
-    static generateField (row, col, hole=5) {
+    static generateField (row, col, holePercentage=0.4) {
         let resultArray = []
+        const holeNum = row*col*holePercentage;
 
         for (let i=0; i<row; i++) {
             let tempArr = [];
@@ -31,20 +32,28 @@ class Field {
         const hatY = Math.floor(Math.random() * row);
 
         resultArray[hatY][hatX] = hat
+        
 
-        for (let h=0; h<hole; h++) {
-            const ranX = Math.floor(Math.random() * col);
-            const ranY = Math.floor(Math.random() * row);
-            if(ranX !== 0 && ranY !== 0) {
-                resultArray[ranY][ranX] = 'O'
-            
-            } 
-            if(ranX !== hatX && ranY !== hatY) {
-                resultArray[ranY][ranX] = 'O'
+        for (let h=0; h<holeNum; h++) {
+            let ranX = Math.floor(Math.random() * col);
+            let ranY = Math.floor(Math.random() * row);
+          
+            while((ranX === 0 && ranY === 0) || (ranX === hatX && ranY === hatY)) {
+                ranX = Math.floor(Math.random() * col);
+                ranY = Math.floor(Math.random() * row);
             }
+            resultArray[ranY][ranX] = hole;
 
+            // if(ranX !== 0 && ranY !== 0) {
+            //     resultArray[ranY][ranX] = hole
             
+            // } 
+            // if(ranX !== hatX && ranY !== hatY) {
+            //     resultArray[ranY][ranX] = hole
+            // }        
         }
+
+     
 
         return resultArray;
     }
@@ -105,8 +114,8 @@ class Field {
 
 const main = () => {
 
-    const temp = Field.generateField(5,5)
-    console.log({temp})
+    const field = Field.generateField(5,5)
+    // console.log({temp})
 
     // const game = new Field([
     //     ['*','░','O'],
@@ -114,34 +123,36 @@ const main = () => {
     //     ['░','^','░']
     // ])
 
-    const game = new Field(temp)
+    const game = new Field(field)
     
     while (true) {
    
         game.printField()
 
         const direction = prompt('Which direction? Please enter U,D,L,R or Q to quit  ');
-        if(direction === 'Q')
+        if(direction === 'Q') {
+            console.log("Thanks for playing")
             break;
+        }
         if(direction !== 'L' && direction !== 'R' && direction !== 'U' && direction !== 'D' ) {
             console.log("Wrong input. Try again");
             continue;
         }
-        console.log(`Your direction is ${direction}`);
+        // console.log(`Your direction is ${direction}`);
     
     
         game.updatePosition(direction);
         if(!game.isPositionWithinField()) {
             console.log("Out of field. Game Over")
-            break;
+            return main();
         }
         if(game.isHitAHole()) {
             console.log("You Hit A Hole. Game Over")
-            break;
+            return main();
         }
         if(game.isFoundTheHat()) {
             console.log("You Found The Hat. You are the winner")
-            break;
+            return main();
         }
         game.updateField();
 
